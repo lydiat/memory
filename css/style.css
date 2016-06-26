@@ -1,0 +1,166 @@
+body {
+  font-family: Arial;
+  font-size:15px;
+}
+
+#container {
+  display: block;
+  margin: 0px auto;
+}
+
+.cardWrapper {
+  float: left;
+  margin: 10px;
+  position: relative;
+  float: left;
+  -webkit-font-smoothing: antialiased;
+  cursor: pointer;
+  img {
+    border-radius: 15px;
+  }
+}
+
+.card {
+  width: 100%;
+  height: 100%;
+}
+
+.cardFace {
+  position: absolute;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+.flipped {}
+
+.restart {
+  background-image:url(http://lydiat.org/blog/wp-content/plugins/jquery-image-lazy-loading/images/grey.gif);
+  float:right;
+  margin-right:50px;
+  font-size:12px;
+  padding:5px 10px;
+  border-radius:3px;
+  background:white;
+  border:none;
+}
+
+.restart:hover {
+  background:#aaa;
+  color:white;
+  cursor:pointer;
+}
+
+.front {
+  background: gray url(http://subtlepatterns2015.subtlepatterns.netdna-cdn.com/patterns/tree_bark.png);
+  border-radius: 15px;
+  opacity: 0;
+}
+
+.back {
+  border-radius: 15px;
+  text-align: center;
+  opacity: 1;
+  * {
+    display: none;
+  }
+  &.white {
+    opacity: 1;
+    * {
+      display: inline-block;
+    }
+  }
+}
+
+.left {
+  float: left;
+  margin: 0px 30px;
+}
+
+#leaderboard {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  padding:1%;
+  background: #eee;
+  width: 100%;
+  .turns {
+    float: left;
+  }
+  .match {
+    margin: 0px auto;
+    text-align: center;
+  }
+}
+
+.matchFade {
+  text-align: center;
+  width: 50px;
+  display: block;
+  -webkit-animation: fadein 1s;
+  /* Safari, Chrome and Opera > 12.1 */
+  -moz-animation: fadein 1s;
+  /* Firefox < 16 */
+  -ms-animation: fadein 1s;
+  /* Internet Explorer */
+  -o-animation: fadein 1s;
+  /* Opera < 12.1 */
+  animation: fadein 1s;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+
+/* Firefox < 16 */
+
+@-moz-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+
+/* Safari, Chrome and Opera > 12.1 */
+
+@-webkit-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+
+/* Internet Explorer */
+
+@-ms-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+
+/* Opera < 12.1 */
+
+@-o-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
