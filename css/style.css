@@ -32,27 +32,8 @@ body {
   height: 100%;
 }
 
-.flipped {}
-
-.restart {
-  background-image:url(http://lydiat.org/blog/wp-content/plugins/jquery-image-lazy-loading/images/grey.gif);
-  float:right;
-  margin-right:50px;
-  font-size:12px;
-  padding:5px 10px;
-  border-radius:3px;
-  background:white;
-  border:none;
-}
-
-.restart:hover {
-  background:#aaa;
-  color:white;
-  cursor:pointer;
-}
-
 .front {
-  background: gray url(http://subtlepatterns2015.subtlepatterns.netdna-cdn.com/patterns/tree_bark.png);
+  background: gray url(../img/tree_bark.png);
   border-radius: 15px;
   opacity: 0;
 }
