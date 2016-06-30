@@ -1,11 +1,12 @@
 var matchCount = 0;
 var matchWatch = 0;
 var correctMatchCount = 0;
-var matchArr = new Array;
+var matchArr = [];
 var size = 200;
 var cardStartCount = 2;
 var promos;
 var speed = 0.5;
+var flipSpeed = 1000;
 
 function arrangeCards(num, size) {
     var jqxhr = $.getJSON("json/images.json", function() {
@@ -61,7 +62,6 @@ function arrangeLoadedCards(num, size, promos) {
 
                 $(elem).on('click', function(elem) {
                     if ($(this).hasClass('flipped')) {
-                        console.log('already flipped');
                     } else {
                         TweenLite.to($(this), speed, {
                             rotationY: -180,
@@ -82,11 +82,8 @@ function arrangeLoadedCards(num, size, promos) {
             function setupCards(z) {
                 $(z).find('.front').animate({
                     opacity: 1
-                }, 1500);
+                }, flipSpeed);
                 loadPhotos();
-                $('#container').css({
-                    'margin-top': ($(window).height() - $('#container').width()) / 2
-                });
                 $(window).resize(function() {
                     placeCards();
                 });
@@ -110,6 +107,8 @@ function loadPhotos() {
     TweenLite.set([".back", ".front"], {
         backfaceVisibility: "hidden"
     });
+
+    placeCards();
 }
 
 function shuffleCards(o) {
@@ -117,17 +116,17 @@ function shuffleCards(o) {
     return o;
 };
 
-function restartGame() {
+/*function restartGame() {
     $('#leaderboard .matchcount').html('<span class="matchFade">◕◡◕</span>');
     $('#leaderboard .score').html('0');
     matchCount, matchWatch = 0;
     arrangeCards(cardStartCount, size);
-}
+}*/
 
 function placeCards() {
-    $('#container').css({
+  /*  $('#container').css({
         'margin-top': ($(window).height() - $('#container').width()) / 2
-    });
+    });*/
 }
 
 function noteMatch(matchArr) {
@@ -135,9 +134,9 @@ function noteMatch(matchArr) {
     var tally = $('#leaderboard .matchcount');
     if ($(matchArr[1][0]).attr('src') == $(matchArr[2][0]).attr('src')) {
         correctMatchCount++;
-        tally.html('<span class="matchFade">＾-＾</span>');
+       // tally.html('<span class="matchFade">＾-＾</span>');
     } else {
-        tally.html('<span class="matchFade">˘_˘٥</span>');
+      //  tally.html('<span class="matchFade">˘_˘٥</span>');
         $(matchArr[1]).parents('.card').removeClass('flipped');
         $(matchArr[2]).parents('.card').removeClass('flipped');
         setTimeout(function() {
@@ -148,16 +147,20 @@ function noteMatch(matchArr) {
                 rotationY: -360,
                 ease: Back.easeOut,
             });
-        }, 1500);
+        }, flipSpeed);
     }
 
     $('#leaderboard .score').html(matchWatch);
     if (cardStartCount == correctMatchCount) {
-        tally.html('<span class="matchFade">^▽^</span>');
+       // tally.html('<span class="matchFade">^▽^</span>');
         setTimeout(function() {
-            $('#leaderboard .matchcount').html('<span class="matchFade">◕◡◕</span>');
-            arrangeCards(3, size);
-        }, 1500);
+           // $('#leaderboard .matchcount').html('<span class="matchFade">◕◡◕</span>');
+           correctMatchCount = 0;
+            $('#leaderboard .roundcount').html(cardStartCount);
+
+           cardStartCount++;
+            arrangeCards(cardStartCount, size);
+        }, flipSpeed);
 
     }
     matchCount = 0;
@@ -166,7 +169,5 @@ function noteMatch(matchArr) {
 $(document).ready(function() {
 
     arrangeCards(cardStartCount, size);
-
-
 
 });

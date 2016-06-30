@@ -5,7 +5,7 @@ body {
 
 #container {
   display: block;
-  margin: 0px auto;
+  margin: 50px auto;
 }
 
 .cardWrapper {
@@ -63,7 +63,7 @@ body {
   top: 0px;
   left: 0px;
   padding:1%;
-  background: #eee;
+  background: #E7E7E6;
   width: 100%;
   .turns {
     float: left;
