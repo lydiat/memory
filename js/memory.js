@@ -9,18 +9,17 @@ var speed = 0.5;
 var flipSpeed = 1000;
 
 function arrangeCards(num, size) {
-    var jqxhr = $.getJSON("json/images2.json", function() {
+    var photos = $.getJSON("json/images2.json", function() {
             // console.log( "success" );
         })
         .fail(function() {
             console.log("error");
-        });
-
-    jqxhr.complete(function() {
-        var promos = jqxhr.responseJSON.images;
-        arrangeLoadedCards(num, size, promos);
+        })
+        .complete(function() {
+            var promos = photos.responseJSON.images;
+            arrangeLoadedCards(num, size, promos);
     });
-}
+};
 
 function arrangeLoadedCards(num, size, promos) {
 
@@ -38,48 +37,47 @@ function arrangeLoadedCards(num, size, promos) {
         thiselem = $(this)[0];
         htmlelem += "<div style='height:" + size + "px;width:" + size + "px' id='img" + id + "' class='cardWrapper''>";
         htmlelem += "<div class='card'>";
-        htmlelem += "<div class='cardFace front original_image' style='background:gray url(img/"+cardStartCount+".png)'></div>";
+        htmlelem += "<div class='cardFace front original_image' style='background:url(img/"+cardStartCount+".png)'></div>";
         htmlelem += "<div class='cardFace back flip_image'>";
         htmlelem += "<img  style='height:" + size + "px;width:" + size + "px' src='" + thiselem.flip_image + "'/>";
         htmlelem += "</div></div></div>";
         $(htmlelem).appendTo('#container').each(function(html, elem) {
 
             var thisCard = $(elem).find('.card');
+
             TweenLite.to($(thisCard), 0, {
-                rotationY: 180,
-                ease: Back.easeOut,
+                rotationY: 0,
                 onComplete: spinCards($(thisCard))
             });
 
             function spinCards(elem) {
-                var number = (Math.random() * (2) + 1).toFixed(1);
                 TweenLite.to($(elem), 0, {
                     rotationY: 0,
                     delay: 0.01,
                     onComplete: loadPhotos()
-
                 });
-
-                $(elem).on('click', function(elem) {
-                    if ($(this).hasClass('flipped')) {
-                    } else {
-                        TweenLite.to($(this), speed, {
-                            rotationY: -180,
-                            ease: Back.easeOut
-                        });
-                        $(this).addClass('flipped');
-                        var imgElem = $(this).find('.back img');
-                        imgElem.show();
-                        matchCount++;
-                        matchArr[matchCount] = imgElem;
-                        if (matchCount == 2) {
-                            noteMatch(matchArr);
-                        }
-                    };
-                })
+                cardClickHandler(elem);
             };
         })
     });
+}
+
+function cardClickHandler(elem){
+    $(elem).on('click', function(elem) {
+        if (!$(this).hasClass('flipped')) {
+            TweenLite.to($(this), speed, {
+                rotationY: -180,
+                ease: Back.easeOut
+            });
+            $(this).addClass('flipped');
+            var imgElem = $(this).find('.back img');
+            matchCount++;
+            matchArr[matchCount] = imgElem;
+            if (matchCount == 2) {
+                noteMatch(matchArr);
+            }
+        };
+    })
 }
 
 function loadPhotos() {
@@ -101,24 +99,10 @@ function loadPhotos() {
     });
 }
 
-
-
-
-
 function shuffleCards(o) {
     for (var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
 };
-
-
-function allMatched(){
-    setTimeout(function() {
-        correctMatchCount = 0;
-        $('#leaderboard .roundcount').html(cardStartCount)
-        cardStartCount++;
-        arrangeCards(cardStartCount, size);
-    }, flipSpeed);
-}
 
 function noteMatch(matchArr) {
     matchWatch++;
@@ -144,6 +128,15 @@ function noteMatch(matchArr) {
       allMatched();
     }
     matchCount = 0;
+}
+
+function allMatched(){
+    setTimeout(function() {
+        correctMatchCount = 0;
+        $('#leaderboard .roundcount').html(cardStartCount)
+        cardStartCount++;
+        arrangeCards(cardStartCount, size);
+    }, flipSpeed);
 }
 
 $(document).ready(function() {
