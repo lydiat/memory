@@ -40,7 +40,7 @@ body {
 .back {
   border-radius: 15px;
   text-align: center;
-  opacity: 1;
+  opacity: 0;
   * {
     display: none;
   }
@@ -74,9 +74,6 @@ body {
 }
 
 .matchFade {
-  text-align: center;
-  width: 50px;
-  display: block;
   -webkit-animation: fadein 1s;
   /* Safari, Chrome and Opera > 12.1 */
   -moz-animation: fadein 1s;
