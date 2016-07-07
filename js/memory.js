@@ -1,13 +1,13 @@
 var matchCount = 0;
-var matchWatch = 0;
 var correctMatchCount = 0;
 var matchArr = [];
 var memoryArr = [];
 var memoryArrDupe = [];
 var maxSize = 250;
 var cardStartCount = 0;
-var speed = 0.5;
-var flipSpeed = 1000;
+var speed = 0.4;
+clicksAllowed = true;
+var flipSpeed = 500;
 var cardCountArray = [2, 6, 9, 12, 14];
 var cardCountArrayCols = [2, 4, 6, 6, 7];
 var cardCountArrayRows = [2, 3, 3, 4, 4];
@@ -25,7 +25,7 @@ function arrangeCards(num) {
     });
 
     $( window ).resize(function() {
-        cardSizeCalc(cardStartCount, true)
+        cardSizeCalc(cardStartCount, true);
     });
 }
     
@@ -40,7 +40,7 @@ function cardSizeCalc(num, resize = false){
     cardSize = Math.min(cardHeight, cardWidth, maxSize);
 
     if(resize === true){
-        $('.cardWrapper, img').css({'height':cardSize, 'width':cardSize})
+        $('.cardWrapper, img').css({'height':cardSize, 'width':cardSize});
     }
 
     contWidth = numofColumns * cardSize + (numofColumns * 20);
@@ -94,27 +94,33 @@ function arrangeLoadedCards(num, promos) {
                     onComplete: loadPhotos()
                 });
                 cardClickHandler(elem);
-            };
-        })
+            }
+        });
     });
 }
 
 function cardClickHandler(elem){
     $(elem).on('click', function(elem) {
-        if (!$(this).hasClass('flipped')) {
+        elem.preventDefault();
+        if (!$(this).hasClass('flipped') && clicksAllowed === true) {
             TweenLite.to($(this), speed, {
                 rotationY: -180,
-                ease: Back.easeOut
+                ease: Back.easeOut,
+                onComplete: processCard($(this))
             });
-            $(this).addClass('flipped');
-            var imgElem = $(this).find('.back img');
-            matchCount++;
-            matchArr[matchCount] = imgElem;
-            if (matchCount == 2) {
-                noteMatch(matchArr);
-            }
-        };
-    })
+        }
+    });
+}
+
+function processCard(elem){
+    $(elem).addClass('flipped');
+    var imgElem = $(elem).find('.back img');
+    matchCount++;
+    matchArr[matchCount] = imgElem;
+    if (matchCount === 2) {
+      clicksAllowed = false;
+      noteMatch(matchArr);
+    }
 }
 
 function loadPhotos() {
@@ -133,10 +139,14 @@ function shuffleCards(o) {
 };
 
 function noteMatch(matchArr) {
-    matchWatch++;
+
     if ($(matchArr[1][0]).attr('src') == $(matchArr[2][0]).attr('src')) {
         correctMatchCount++;
+        clicksAllowed = true;
+        console.log(correctMatchCount + " match");
     } else {
+
+        console.log('no match');
         $(matchArr[1]).parents('.card').removeClass('flipped');
         $(matchArr[2]).parents('.card').removeClass('flipped');
         setTimeout(function() {
@@ -146,6 +156,7 @@ function noteMatch(matchArr) {
             ], speed, {
                 rotationY: -360,
                 ease: Back.easeOut,
+                onComplete: function(){clicksAllowed = true;}
             });
         }, flipSpeed);
     }
