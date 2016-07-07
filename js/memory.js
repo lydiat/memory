@@ -54,23 +54,31 @@ function arrangeLoadedCards(num, promos) {
 
     numOfCards = cardCountArray[num];
 
+    // don't grab the same cards every time
     memoryArr = shuffleCards(promos);
+
+    // select the cards necessary
     memoryArr = promos.slice(0, numOfCards);
+
+    // duplicate the array so they can be matched
     memoryArrDupe = memoryArr.concat(memoryArr);
+
+    //shuffle again
     memoryArrDupe = shuffleCards(memoryArrDupe);
+
     $('#container').empty();
 
     backgroundImg = Math.floor(Math.random() * 5);
 
     $.each(memoryArrDupe, function(id) {
-        var htmlelem = "";
         thiselem = $(this)[0];
-        htmlelem += "<div style='height:" + cardSize + "px;width:" + cardSize + "px' id='img" + id + "' class='cardWrapper''>";
-        htmlelem += "<div class='card'>";
-        htmlelem += "<div class='cardFace front original_image' style='background:url(img/"+backgroundImg+".png)'></div>";
-        htmlelem += "<div class='cardFace back flip_image'>";
-        htmlelem += "<img  style='height:" + cardSize + "px;width:" + cardSize + "px' src='" + thiselem.flip_image + "'/>";
-        htmlelem += "</div></div></div>";
+
+        var htmlelem = $('#cardShell').clone();
+
+        $(htmlelem).find('.cardWrapper, img').css({'height':cardSize, 'width':cardSize});
+        $(htmlelem).find('.front').css({'background':'url(img/'+backgroundImg+'.png)'});
+        $(htmlelem).find('img').attr('src',thiselem.flip_image);
+
         $(htmlelem).appendTo('#container').each(function(html, elem) {
 
             thisCard = $(elem).find('.card');
@@ -82,7 +90,6 @@ function arrangeLoadedCards(num, promos) {
 
             function spinCards(elem) {
                 TweenLite.to($(elem), 0, {
-                    rotationY: 0,
                     delay: 0.01,
                     onComplete: loadPhotos()
                 });
@@ -111,22 +118,12 @@ function cardClickHandler(elem){
 }
 
 function loadPhotos() {
-    // Tweenlite animation for loading and spinning photos
-    TweenLite.set(".cardWrapper", {
-        perspective: 800
-    });
-    TweenLite.set(".card", {
-        transformStyle: "preserve-3d"
-    });
     TweenLite.set(".back", {
         rotationY: -180,
         onComplete:function(){
             $('.back').css('opacity','1');
-            $('.front').fadeIn(1000);
+            $('.front').fadeIn(2000);
         }
-    });
-    TweenLite.set([".back", ".front"], {
-        backfaceVisibility: "hidden"
     });
 }
 
@@ -137,7 +134,6 @@ function shuffleCards(o) {
 
 function noteMatch(matchArr) {
     matchWatch++;
-    var tally = $('#leaderboard .matchcount');
     if ($(matchArr[1][0]).attr('src') == $(matchArr[2][0]).attr('src')) {
         correctMatchCount++;
     } else {
@@ -154,7 +150,6 @@ function noteMatch(matchArr) {
         }, flipSpeed);
     }
 
-    $('#leaderboard .score').html(matchWatch);
     if (cardCountArray[cardStartCount] == correctMatchCount) {
       allMatched();
     }
@@ -164,7 +159,6 @@ function noteMatch(matchArr) {
 function allMatched(){
     setTimeout(function() {
         correctMatchCount = 0;
-        $('#leaderboard .roundcount').html(cardStartCount);
         cardStartCount++;
         arrangeCards(cardStartCount);
     }, flipSpeed);
