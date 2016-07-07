@@ -2,48 +2,78 @@ var matchCount = 0;
 var matchWatch = 0;
 var correctMatchCount = 0;
 var matchArr = [];
-var cardStartCount = 1;
-var size = 200;
-var cardStartCount = 2;
+var memoryArr = [];
+var memoryArrDupe = [];
+var maxSize = 250;
+var cardStartCount = 0;
 var speed = 0.5;
 var flipSpeed = 1000;
+var cardCountArray = [2, 6, 9, 12, 14];
+var cardCountArrayCols = [2, 4, 6, 6, 7];
+var cardCountArrayRows = [2, 3, 3, 4, 4];
+var contWidth, photos, promos, thisCard, backgroundImg;
 
-function arrangeCards(num, size) {
-    var photos = $.getJSON("json/images2.json", function() {
-            // console.log( "success" );
-        })
+
+function arrangeCards(num) {
+    photos = $.getJSON("json/images2.json")
         .fail(function() {
             console.log("error");
         })
         .complete(function() {
-            var promos = photos.responseJSON.images;
-            arrangeLoadedCards(num, size, promos);
+            promos = photos.responseJSON.images;
+            arrangeLoadedCards(num, promos);
     });
-};
 
-function arrangeLoadedCards(num, size, promos) {
+    $( window ).resize(function() {
+        cardSizeCalc(cardStartCount, true)
+    });
+}
+    
+function cardSizeCalc(num, resize = false){
 
-    var contWidth = num * size + 60;
+    numOfRows = cardCountArrayRows[num];
+    numofColumns = cardCountArrayCols[num];
+
+    cardHeight = Math.floor(($(window).height() - 100) / numOfRows) - 15;
+    cardWidth = Math.floor(($(window).width() - 100)  / numofColumns) - 15;
+
+    cardSize = Math.min(cardHeight, cardWidth, maxSize);
+
+    if(resize === true){
+        $('.cardWrapper, img').css({'height':cardSize, 'width':cardSize})
+    }
+
+    contWidth = numofColumns * cardSize + (numofColumns * 20);
     $('#container').width(contWidth);
+    return cardSize;
+}
 
-    var memoryArr = shuffleCards(promos);
-    var memoryArr = promos.slice(0, num);
-    var memoryArrDupe = memoryArr.concat(memoryArr);
-    var memoryArrDupe = shuffleCards(memoryArrDupe);
+function arrangeLoadedCards(num, promos) {
+ 
+    cardSize = cardSizeCalc(num);
+
+    numOfCards = cardCountArray[num];
+
+    memoryArr = shuffleCards(promos);
+    memoryArr = promos.slice(0, numOfCards);
+    memoryArrDupe = memoryArr.concat(memoryArr);
+    memoryArrDupe = shuffleCards(memoryArrDupe);
     $('#container').empty();
+
+    backgroundImg = Math.floor(Math.random() * 5);
 
     $.each(memoryArrDupe, function(id) {
         var htmlelem = "";
         thiselem = $(this)[0];
-        htmlelem += "<div style='height:" + size + "px;width:" + size + "px' id='img" + id + "' class='cardWrapper''>";
+        htmlelem += "<div style='height:" + cardSize + "px;width:" + cardSize + "px' id='img" + id + "' class='cardWrapper''>";
         htmlelem += "<div class='card'>";
-        htmlelem += "<div class='cardFace front original_image' style='background:url(img/"+cardStartCount+".png)'></div>";
+        htmlelem += "<div class='cardFace front original_image' style='background:url(img/"+backgroundImg+".png)'></div>";
         htmlelem += "<div class='cardFace back flip_image'>";
-        htmlelem += "<img  style='height:" + size + "px;width:" + size + "px' src='" + thiselem.flip_image + "'/>";
+        htmlelem += "<img  style='height:" + cardSize + "px;width:" + cardSize + "px' src='" + thiselem.flip_image + "'/>";
         htmlelem += "</div></div></div>";
         $(htmlelem).appendTo('#container').each(function(html, elem) {
 
-            var thisCard = $(elem).find('.card');
+            thisCard = $(elem).find('.card');
 
             TweenLite.to($(thisCard), 0, {
                 rotationY: 0,
@@ -92,6 +122,7 @@ function loadPhotos() {
         rotationY: -180,
         onComplete:function(){
             $('.back').css('opacity','1');
+            $('.front').fadeIn(1000);
         }
     });
     TweenLite.set([".back", ".front"], {
@@ -124,7 +155,7 @@ function noteMatch(matchArr) {
     }
 
     $('#leaderboard .score').html(matchWatch);
-    if (cardStartCount == correctMatchCount) {
+    if (cardCountArray[cardStartCount] == correctMatchCount) {
       allMatched();
     }
     matchCount = 0;
@@ -133,14 +164,12 @@ function noteMatch(matchArr) {
 function allMatched(){
     setTimeout(function() {
         correctMatchCount = 0;
-        $('#leaderboard .roundcount').html(cardStartCount)
+        $('#leaderboard .roundcount').html(cardStartCount);
         cardStartCount++;
-        arrangeCards(cardStartCount, size);
+        arrangeCards(cardStartCount);
     }, flipSpeed);
 }
 
 $(document).ready(function() {
-
-    arrangeCards(cardStartCount, size);
-
+    arrangeCards(cardStartCount);
 });
