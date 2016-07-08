@@ -35,43 +35,11 @@ body {
 .front {
   border-radius: 15px;
   opacity: 1;
-  display:none;
 }
 
 .back {
   border-radius: 15px;
-  text-align: center;
   opacity: 0;
-  * {
-    display: none;
-  }
-  &.white {
-    opacity: 1;
-    * {
-      display: inline-block;
-    }
-  }
-}
-
-.left {
-  float: left;
-  margin: 0px 30px;
-}
-
-#leaderboard {
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  padding:1%;
-  background: #E7E7E6;
-  width: 100%;
-  .turns {
-    float: left;
-  }
-  .match {
-    margin: 0px auto;
-    text-align: center;
-  }
 }
 
 .matchFade {
@@ -95,9 +63,7 @@ body {
   }
 }
 
-
 /* Firefox < 16 */
-
 @-moz-keyframes fadein {
   from {
     opacity: 0;
@@ -107,9 +73,7 @@ body {
   }
 }
 
-
 /* Safari, Chrome and Opera > 12.1 */
-
 @-webkit-keyframes fadein {
   from {
     opacity: 0;
@@ -119,9 +83,7 @@ body {
   }
 }
 
-
 /* Internet Explorer */
-
 @-ms-keyframes fadein {
   from {
     opacity: 0;
@@ -131,9 +93,7 @@ body {
   }
 }
 
-
 /* Opera < 12.1 */
-
 @-o-keyframes fadein {
   from {
     opacity: 0;

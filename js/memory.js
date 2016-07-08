@@ -1,17 +1,19 @@
+var contWidth, photos, promos, thisCard, backgroundImg;
+
 var matchCount = 0;
 var correctMatchCount = 0;
-var matchArr = [];
-var memoryArr = [];
-var memoryArrDupe = [];
 var maxSize = 250;
 var cardStartCount = 0;
 var speed = 0.4;
-clicksAllowed = true;
 var flipSpeed = 500;
+var clicksAllowed = true;
+
+var matchArr = [];
+var memoryArr = [];
+var memoryArrDupe = [];
 var cardCountArray = [2, 6, 9, 12, 14];
 var cardCountArrayCols = [2, 4, 6, 6, 7];
 var cardCountArrayRows = [2, 3, 3, 4, 4];
-var contWidth, photos, promos, thisCard, backgroundImg;
 
 
 function arrangeCards(num) {
@@ -36,16 +38,15 @@ function cardSizeCalc(num, resize = false){
 
     cardHeight = Math.floor(($(window).height() - 100) / numOfRows) - 15;
     cardWidth = Math.floor(($(window).width() - 100)  / numofColumns) - 15;
-
     cardSize = Math.min(cardHeight, cardWidth, maxSize);
-
-    if(resize === true){
-        $('.cardWrapper, img').css({'height':cardSize, 'width':cardSize});
-    }
 
     contWidth = numofColumns * cardSize + (numofColumns * 20);
     $('#container').width(contWidth);
-    return cardSize;
+    if(resize === true){
+       $('.cardWrapper, img').css({'height':cardSize, 'width':cardSize});
+    } else {
+       return cardSize;
+    }
 }
 
 function arrangeLoadedCards(num, promos) {
@@ -128,7 +129,6 @@ function loadPhotos() {
         rotationY: -180,
         onComplete:function(){
             $('.back').css('opacity','1');
-            $('.front').fadeIn(2000);
         }
     });
 }
@@ -139,13 +139,11 @@ function shuffleCards(o) {
 };
 
 function noteMatch(matchArr) {
-
-    if ($(matchArr[1][0]).attr('src') == $(matchArr[2][0]).attr('src')) {
+    if ($(matchArr[1][0]).attr('src') === $(matchArr[2][0]).attr('src')) {
         correctMatchCount++;
         clicksAllowed = true;
         console.log(correctMatchCount + " match");
     } else {
-
         console.log('no match');
         $(matchArr[1]).parents('.card').removeClass('flipped');
         $(matchArr[2]).parents('.card').removeClass('flipped');
@@ -161,7 +159,7 @@ function noteMatch(matchArr) {
         }, flipSpeed);
     }
 
-    if (cardCountArray[cardStartCount] == correctMatchCount) {
+    if (cardCountArray[cardStartCount] === correctMatchCount) {
       allMatched();
     }
     matchCount = 0;
