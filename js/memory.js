@@ -1,7 +1,7 @@
 var contWidth, photos, promos, thisCard, backgroundImg;
 
 var matchCount = 0;
-var correctMatchCount = 0;
+var correctCount = 0;
 var maxSize = 250;
 var cardStartCount = 0;
 var speed = 0.4;
@@ -16,25 +16,26 @@ var cardCountArrayCols = [2, 4, 6, 6, 7];
 var cardCountArrayRows = [2, 3, 3, 4, 4];
 
 
-function arrangeCards(num) {
+function arrangeCards(numCards) {
     photos = $.getJSON("json/images2.json")
         .fail(function() {
             console.log("error");
         })
         .complete(function() {
             promos = photos.responseJSON.images;
-            arrangeLoadedCards(num, promos);
+            arrangeLoadedCards(numCards, promos);
     });
 
     $( window ).resize(function() {
         cardSizeCalc(cardStartCount, true);
     });
 }
-    
-function cardSizeCalc(num, resize = false){
 
-    numOfRows = cardCountArrayRows[num];
-    numofColumns = cardCountArrayCols[num];
+// make sure cards fit page  
+function cardSizeCalc(numCards, resize = false){
+
+    numOfRows = cardCountArrayRows[numCards];
+    numofColumns = cardCountArrayCols[numCards];
 
     cardHeight = Math.floor(($(window).height() - 100) / numOfRows) - 15;
     cardWidth = Math.floor(($(window).width() - 100)  / numofColumns) - 15;
@@ -49,11 +50,12 @@ function cardSizeCalc(num, resize = false){
     }
 }
 
-function arrangeLoadedCards(num, promos) {
+// shuffle cards and display
+function arrangeLoadedCards(numCards, promos) {
  
-    cardSize = cardSizeCalc(num);
+    cardSize = cardSizeCalc(numCards);
 
-    numOfCards = cardCountArray[num];
+    numOfCards = cardCountArray[numCards];
 
     // don't grab the same cards every time
     memoryArr = shuffleCards(promos);
@@ -100,6 +102,16 @@ function arrangeLoadedCards(num, promos) {
     });
 }
 
+function loadPhotos() {
+    TweenLite.set(".back", {
+        rotationY: -180,
+        onComplete:function(){
+            $('.back').css('opacity','1');
+        }
+    });
+}
+
+// on click, rotate and process
 function cardClickHandler(elem){
     $(elem).on('click', function(elem) {
         elem.preventDefault();
@@ -113,6 +125,7 @@ function cardClickHandler(elem){
     });
 }
 
+// note card identity and match if second click
 function processCard(elem){
     $(elem).addClass('flipped');
     var imgElem = $(elem).find('.back img');
@@ -124,27 +137,18 @@ function processCard(elem){
     }
 }
 
-function loadPhotos() {
-    TweenLite.set(".back", {
-        rotationY: -180,
-        onComplete:function(){
-            $('.back').css('opacity','1');
-        }
-    });
-}
-
+// shamelessly stolen from http://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array-in-javascript/6274381#6274381
 function shuffleCards(o) {
     for (var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
 };
 
+// compare cards one and two and act appropriately
 function noteMatch(matchArr) {
     if ($(matchArr[1][0]).attr('src') === $(matchArr[2][0]).attr('src')) {
-        correctMatchCount++;
+        correctCount++;
         clicksAllowed = true;
-        console.log(correctMatchCount + " match");
     } else {
-        console.log('no match');
         $(matchArr[1]).parents('.card').removeClass('flipped');
         $(matchArr[2]).parents('.card').removeClass('flipped');
         setTimeout(function() {
@@ -158,16 +162,16 @@ function noteMatch(matchArr) {
             });
         }, flipSpeed);
     }
-
-    if (cardCountArray[cardStartCount] === correctMatchCount) {
+    if (cardCountArray[cardStartCount] === correctCount) {
       allMatched();
     }
     matchCount = 0;
 }
 
+// restart the game at a higher level
 function allMatched(){
     setTimeout(function() {
-        correctMatchCount = 0;
+        correctCount = 0;
         cardStartCount++;
         arrangeCards(cardStartCount);
     }, flipSpeed);
