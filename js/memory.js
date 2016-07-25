@@ -17,42 +17,42 @@ var cardCountArrayRows = [2, 3, 3, 4, 4];
 
 
 function arrangeCards(numCards) {
-    photos = $.getJSON("json/images2.json")
+    photos = $.getJSON("json/images.json")
         .fail(function() {
             console.log("error");
         })
         .complete(function() {
             promos = photos.responseJSON.images;
             arrangeLoadedCards(numCards, promos);
-    });
+        });
 
-    $( window ).resize(function() {
+    $(window).resize(function() {
         cardSizeCalc(cardStartCount, true);
     });
 }
 
-// make sure cards fit page  
-function cardSizeCalc(numCards, resize = false){
+// make sure cards fit page in an even block
+function cardSizeCalc(numCards, resize) {
 
     numOfRows = cardCountArrayRows[numCards];
     numofColumns = cardCountArrayCols[numCards];
 
     cardHeight = Math.floor(($(window).height() - 100) / numOfRows) - 15;
-    cardWidth = Math.floor(($(window).width() - 100)  / numofColumns) - 15;
+    cardWidth = Math.floor(($(window).width() - 100) / numofColumns) - 15;
     cardSize = Math.min(cardHeight, cardWidth, maxSize);
 
     contWidth = numofColumns * cardSize + (numofColumns * 20);
     $('#container').width(contWidth);
-    if(resize === true){
-       $('.cardWrapper, img').css({'height':cardSize, 'width':cardSize});
+    if (resize === true) {
+        $('.cardWrapper, img').css({ 'height': cardSize, 'width': cardSize });
     } else {
-       return cardSize;
+        return cardSize;
     }
 }
 
 // shuffle cards and display
 function arrangeLoadedCards(numCards, promos) {
- 
+
     cardSize = cardSizeCalc(numCards);
 
     numOfCards = cardCountArray[numCards];
@@ -73,14 +73,15 @@ function arrangeLoadedCards(numCards, promos) {
 
     backgroundImg = Math.floor(Math.random() * 5);
 
+
     $.each(memoryArrDupe, function(id) {
         thiselem = $(this)[0];
 
-        var htmlelem = $('#cardShell').clone();
+        var htmlelem = $('#cardShell').children().clone();
 
-        $(htmlelem).find('.cardWrapper, img').css({'height':cardSize, 'width':cardSize});
-        $(htmlelem).find('.front').css({'background':'url(img/'+backgroundImg+'.png)'});
-        $(htmlelem).find('img').attr('src',thiselem.flip_image);
+        $(htmlelem).css({ 'height': cardSize, 'width': cardSize });
+        $(htmlelem).find('.front').css({ 'background': 'url(img/' + backgroundImg + '.png)' });
+        $(htmlelem).find('img').attr('src', thiselem.flip_image);
 
         $(htmlelem).appendTo('#container').each(function(html, elem) {
 
@@ -105,14 +106,14 @@ function arrangeLoadedCards(numCards, promos) {
 function loadPhotos() {
     TweenLite.set(".back", {
         rotationY: -180,
-        onComplete:function(){
-            $('.back').css('opacity','1');
+        onComplete: function() {
+            $('.back').css('opacity', '1');
         }
     });
 }
 
 // on click, rotate and process
-function cardClickHandler(elem){
+function cardClickHandler(elem) {
     $(elem).on('click', function(elem) {
         elem.preventDefault();
         if (!$(this).hasClass('flipped') && clicksAllowed === true) {
@@ -126,14 +127,14 @@ function cardClickHandler(elem){
 }
 
 // note card identity and match if second click
-function processCard(elem){
+function processCard(elem) {
     $(elem).addClass('flipped');
     var imgElem = $(elem).find('.back img');
     matchCount++;
     matchArr[matchCount] = imgElem;
     if (matchCount === 2) {
-      clicksAllowed = false;
-      noteMatch(matchArr);
+        clicksAllowed = false;
+        noteMatch(matchArr);
     }
 }
 
@@ -141,7 +142,7 @@ function processCard(elem){
 function shuffleCards(o) {
     for (var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
-};
+}
 
 // compare cards one and two and act appropriately
 function noteMatch(matchArr) {
@@ -158,18 +159,18 @@ function noteMatch(matchArr) {
             ], speed, {
                 rotationY: -360,
                 ease: Back.easeOut,
-                onComplete: function(){clicksAllowed = true;}
+                onComplete: function() { clicksAllowed = true; }
             });
         }, flipSpeed);
     }
     if (cardCountArray[cardStartCount] === correctCount) {
-      allMatched();
+        allMatched();
     }
     matchCount = 0;
 }
 
 // restart the game at a higher level
-function allMatched(){
+function allMatched() {
     setTimeout(function() {
         correctCount = 0;
         cardStartCount++;
