@@ -15,6 +15,29 @@ var cardCountArray = [2, 6, 9, 12, 14];
 var cardCountArrayCols = [2, 4, 6, 6, 7];
 var cardCountArrayRows = [2, 3, 3, 4, 4];
 
+function setUpConnection() {
+
+    var host = window.document.domain;
+    var socket = io.connect(host + ':8080', {
+        path: "/socket/socket.io"
+    });
+
+    console.log(socket);
+
+    $('form').submit(function() {
+        socket.emit('chat message', $('#m').val());
+        $('#m').val('');
+        return false;
+    });
+
+    socket.on('chat message', function(msg) {
+        $('#messages').append($('<li>').text(msg));
+    });
+    
+    arrangeCards(cardStartCount);
+
+
+}
 
 function arrangeCards(numCards) {
     photos = $.getJSON("json/images.json")
@@ -44,7 +67,7 @@ function cardSizeCalc(numCards, resize) {
     contWidth = numofColumns * cardSize + (numofColumns * 20);
     $('#container').width(contWidth);
     if (resize === true) {
-        $('.cardWrapper, img').css({ 'height': cardSize, 'width': cardSize });
+        $('#container .cardWrapper, #container img').css({ 'height': cardSize, 'width': cardSize });
     } else {
         return cardSize;
     }
@@ -179,5 +202,5 @@ function allMatched() {
 }
 
 $(document).ready(function() {
-    arrangeCards(cardStartCount);
+    setUpConnection();
 });

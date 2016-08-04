@@ -2,16 +2,25 @@
     "name": "memory",
     "version": "0.1.0",
     "description": "JavaScript memory game",
+    "scripts": {
+        "start": "node js/socket.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/lydiat/memory.git"
     },
-    "license": "(MIT OR Apache-2.0)", 
+    "license": "(MIT OR Apache-2.0)",
+    "dependencies": {
+        "express": "^4.14.0",
+        "socket.io": "^1.4.8"
+    },
     "devDependencies": {
         "grunt": "~0.4.4",
         "grunt-contrib-jshint": "latest",
         "jshint-stylish": "latest",
         "grunt-contrib-less": "latest",
+        "grunt-express": "^1.4.1",
         "grunt-contrib-watch": "latest"
     }
 }
