@@ -18,6 +18,11 @@
 </head>
 
 <body>
+    <ul id="messages"></ul>
+    <form action="">
+        <input id="m" autocomplete="off" />
+        <button>Send</button>
+    </form>
     <div id="container"></div>
     <div id="cardShell">
         <div class="cardWrapper">

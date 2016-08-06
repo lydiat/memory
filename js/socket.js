@@ -1,7 +1,7 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http, {
-    path: '/socket/socket.io'
+    path: '/memory/socket.io'
 })
 
 app.get('/', function(req, res) {
@@ -11,11 +11,11 @@ app.get('/', function(req, res) {
 
 io.on('connection', function(socket) {
 
-    console.log('io.on connection');
-    io.emit('chat message', 'A user has joined');
+    console.log(socket.id);
+    io.emit('chat message', 'Player '+socket.id+' has joined');
 
     socket.on('disconnect', function() {
-        io.emit('chat message', 'A user has left');
+        io.emit('chat message', 'Player has left');
     });
 
     socket.on('chat message', function(msg) {

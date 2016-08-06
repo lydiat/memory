@@ -19,7 +19,7 @@ function setUpConnection() {
 
     var host = window.document.domain;
     var socket = io.connect(host + ':8080', {
-        path: "/socket/socket.io"
+        path: "/memory/socket.io"
     });
 
     console.log(socket);
@@ -30,177 +30,178 @@ function setUpConnection() {
         return false;
     });
 
-    socket.on('chat message', function(msg) {
-        $('#messages').append($('<li>').text(msg));
-    });
-    
-    arrangeCards(cardStartCount);
+    socket.on('connection', function()
 
-
-}
-
-function arrangeCards(numCards) {
-    photos = $.getJSON("json/images.json")
-        .fail(function() {
-            console.log("error");
-        })
-        .complete(function() {
-            promos = photos.responseJSON.images;
-            arrangeLoadedCards(numCards, promos);
+        socket.on('chat message', function(msg) {
+            $('#messages').append($('<li>').text(msg));
         });
 
-    $(window).resize(function() {
-        cardSizeCalc(cardStartCount, true);
-    });
-}
+        arrangeCards(cardStartCount);
 
-// make sure cards fit page in an even block
-function cardSizeCalc(numCards, resize) {
-
-    numOfRows = cardCountArrayRows[numCards];
-    numofColumns = cardCountArrayCols[numCards];
-
-    cardHeight = Math.floor(($(window).height() - 100) / numOfRows) - 15;
-    cardWidth = Math.floor(($(window).width() - 100) / numofColumns) - 15;
-    cardSize = Math.min(cardHeight, cardWidth, maxSize);
-
-    contWidth = numofColumns * cardSize + (numofColumns * 20);
-    $('#container').width(contWidth);
-    if (resize === true) {
-        $('#container .cardWrapper, #container img').css({ 'height': cardSize, 'width': cardSize });
-    } else {
-        return cardSize;
     }
-}
 
-// shuffle cards and display
-function arrangeLoadedCards(numCards, promos) {
-
-    cardSize = cardSizeCalc(numCards);
-
-    numOfCards = cardCountArray[numCards];
-
-    // don't grab the same cards every time
-    memoryArr = shuffleCards(promos);
-
-    // select the cards necessary
-    memoryArr = promos.slice(0, numOfCards);
-
-    // duplicate the array so they can be matched
-    memoryArrDupe = memoryArr.concat(memoryArr);
-
-    //shuffle again
-    memoryArrDupe = shuffleCards(memoryArrDupe);
-
-    $('#container').empty();
-
-    backgroundImg = Math.floor(Math.random() * 5);
-
-
-    $.each(memoryArrDupe, function(id) {
-        thiselem = $(this)[0];
-
-        var htmlelem = $('#cardShell').children().clone();
-
-        $(htmlelem).css({ 'height': cardSize, 'width': cardSize });
-        $(htmlelem).find('.front').css({ 'background': 'url(img/' + backgroundImg + '.png)' });
-        $(htmlelem).find('img').attr('src', thiselem.flip_image);
-
-        $(htmlelem).appendTo('#container').each(function(html, elem) {
-
-            thisCard = $(elem).find('.card');
-
-            TweenLite.to($(thisCard), 0, {
-                rotationY: 0,
-                onComplete: spinCards($(thisCard))
+    function arrangeCards(numCards) {
+        photos = $.getJSON("json/images.json")
+            .fail(function() {
+                console.log("error");
+            })
+            .complete(function() {
+                promos = photos.responseJSON.images;
+                arrangeLoadedCards(numCards, promos);
             });
 
-            function spinCards(elem) {
-                TweenLite.to($(elem), 0, {
-                    delay: 0.01,
-                    onComplete: loadPhotos()
+        $(window).resize(function() {
+            cardSizeCalc(cardStartCount, true);
+        });
+    }
+
+    // make sure cards fit page in an even block
+    function cardSizeCalc(numCards, resize) {
+
+        numOfRows = cardCountArrayRows[numCards];
+        numofColumns = cardCountArrayCols[numCards];
+
+        cardHeight = Math.floor(($(window).height() - 100) / numOfRows) - 15;
+        cardWidth = Math.floor(($(window).width() - 100) / numofColumns) - 15;
+        cardSize = Math.min(cardHeight, cardWidth, maxSize);
+
+        contWidth = numofColumns * cardSize + (numofColumns * 20);
+        $('#container').width(contWidth);
+        if (resize === true) {
+            $('#container .cardWrapper, #container img').css({ 'height': cardSize, 'width': cardSize });
+        } else {
+            return cardSize;
+        }
+    }
+
+    // shuffle cards and display
+    function arrangeLoadedCards(numCards, promos) {
+
+        cardSize = cardSizeCalc(numCards);
+
+        numOfCards = cardCountArray[numCards];
+
+        // don't grab the same cards every time
+        memoryArr = shuffleCards(promos);
+
+        // select the cards necessary
+        memoryArr = promos.slice(0, numOfCards);
+
+        // duplicate the array so they can be matched
+        memoryArrDupe = memoryArr.concat(memoryArr);
+
+        //shuffle again
+        memoryArrDupe = shuffleCards(memoryArrDupe);
+
+        $('#container').empty();
+
+        backgroundImg = Math.floor(Math.random() * 5);
+
+
+        $.each(memoryArrDupe, function(id) {
+            thiselem = $(this)[0];
+
+            var htmlelem = $('#cardShell').children().clone();
+
+            $(htmlelem).css({ 'height': cardSize, 'width': cardSize });
+            $(htmlelem).find('.front').css({ 'background': 'url(img/' + backgroundImg + '.png)' });
+            $(htmlelem).find('img').attr('src', thiselem.flip_image);
+
+            $(htmlelem).appendTo('#container').each(function(html, elem) {
+
+                thisCard = $(elem).find('.card');
+
+                TweenLite.to($(thisCard), 0, {
+                    rotationY: 0,
+                    onComplete: spinCards($(thisCard))
                 });
-                cardClickHandler(elem);
+
+                function spinCards(elem) {
+                    TweenLite.to($(elem), 0, {
+                        delay: 0.01,
+                        onComplete: loadPhotos()
+                    });
+                    cardClickHandler(elem);
+                }
+            });
+        });
+    }
+
+    function loadPhotos() {
+        TweenLite.set(".back", {
+            rotationY: -180,
+            onComplete: function() {
+                $('.back').css('opacity', '1');
             }
         });
-    });
-}
-
-function loadPhotos() {
-    TweenLite.set(".back", {
-        rotationY: -180,
-        onComplete: function() {
-            $('.back').css('opacity', '1');
-        }
-    });
-}
-
-// on click, rotate and process
-function cardClickHandler(elem) {
-    $(elem).on('click', function(elem) {
-        elem.preventDefault();
-        if (!$(this).hasClass('flipped') && clicksAllowed === true) {
-            TweenLite.to($(this), speed, {
-                rotationY: -180,
-                ease: Back.easeOut,
-                onComplete: processCard($(this))
-            });
-        }
-    });
-}
-
-// note card identity and match if second click
-function processCard(elem) {
-    $(elem).addClass('flipped');
-    var imgElem = $(elem).find('.back img');
-    matchCount++;
-    matchArr[matchCount] = imgElem;
-    if (matchCount === 2) {
-        clicksAllowed = false;
-        noteMatch(matchArr);
     }
-}
 
-// shamelessly stolen from http://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array-in-javascript/6274381#6274381
-function shuffleCards(o) {
-    for (var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
-    return o;
-}
+    // on click, rotate and process
+    function cardClickHandler(elem) {
+        $(elem).on('click', function(elem) {
+            elem.preventDefault();
+            if (!$(this).hasClass('flipped') && clicksAllowed === true) {
+                TweenLite.to($(this), speed, {
+                    rotationY: -180,
+                    ease: Back.easeOut,
+                    onComplete: processCard($(this))
+                });
+            }
+        });
+    }
 
-// compare cards one and two and act appropriately
-function noteMatch(matchArr) {
-    if ($(matchArr[1][0]).attr('src') === $(matchArr[2][0]).attr('src')) {
-        correctCount++;
-        clicksAllowed = true;
-    } else {
-        $(matchArr[1]).parents('.card').removeClass('flipped');
-        $(matchArr[2]).parents('.card').removeClass('flipped');
+    // note card identity and match if second click
+    function processCard(elem) {
+        $(elem).addClass('flipped');
+        var imgElem = $(elem).find('.back img');
+        matchCount++;
+        matchArr[matchCount] = imgElem;
+        if (matchCount === 2) {
+            clicksAllowed = false;
+            noteMatch(matchArr);
+        }
+    }
+
+    // shamelessly stolen from http://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array-in-javascript/6274381#6274381
+    function shuffleCards(o) {
+        for (var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+        return o;
+    }
+
+    // compare cards one and two and act appropriately
+    function noteMatch(matchArr) {
+        if ($(matchArr[1][0]).attr('src') === $(matchArr[2][0]).attr('src')) {
+            correctCount++;
+            clicksAllowed = true;
+        } else {
+            $(matchArr[1]).parents('.card').removeClass('flipped');
+            $(matchArr[2]).parents('.card').removeClass('flipped');
+            setTimeout(function() {
+                TweenLite.to([
+                    $(matchArr[1]).parents('.card'),
+                    $(matchArr[2]).parents('.card')
+                ], speed, {
+                    rotationY: -360,
+                    ease: Back.easeOut,
+                    onComplete: function() { clicksAllowed = true; }
+                });
+            }, flipSpeed);
+        }
+        if (cardCountArray[cardStartCount] === correctCount) {
+            allMatched();
+        }
+        matchCount = 0;
+    }
+
+    // restart the game at a higher level
+    function allMatched() {
         setTimeout(function() {
-            TweenLite.to([
-                $(matchArr[1]).parents('.card'),
-                $(matchArr[2]).parents('.card')
-            ], speed, {
-                rotationY: -360,
-                ease: Back.easeOut,
-                onComplete: function() { clicksAllowed = true; }
-            });
+            correctCount = 0;
+            cardStartCount++;
+            arrangeCards(cardStartCount);
         }, flipSpeed);
     }
-    if (cardCountArray[cardStartCount] === correctCount) {
-        allMatched();
-    }
-    matchCount = 0;
-}
 
-// restart the game at a higher level
-function allMatched() {
-    setTimeout(function() {
-        correctCount = 0;
-        cardStartCount++;
-        arrangeCards(cardStartCount);
-    }, flipSpeed);
-}
-
-$(document).ready(function() {
-    setUpConnection();
-});
+    $(document).ready(function() {
+        setUpConnection();
+    });
